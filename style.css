@@ -1,0 +1,51 @@
+body, html {
+  height: 100%;
+  width: 100%;
+  background: black;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  background: white;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-content: flex-start;
+}
+
+.item {
+  width: 100px;
+  margin: 5px;
+  padding: 10px;
+  text-align: center;
+}
+
+.item:hover {
+  background: #F4F4F4;
+}
+
+.item .highlighter {
+  background: #F4F4F4;
+}
+
+.item > .content {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  background: #2c3e50;
+  border-radius: 5px;
+}
+
+.item > p.title {
+  font-size: 14px;
+  user-select: none;
+}
