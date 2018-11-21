@@ -26,10 +26,12 @@ class Selectable {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDragEnter = this.handleDragEnter.bind(this);
     this.handleDragLeave = this.handleDragLeave.bind(this);
     this.handleDragOver = this.handleDragOver.bind(this);
     this.handleDragEnd = this.handleDragEnd.bind(this);
+    this.handleDragging = this.handleDragging.bind(this);
   }
 
   initEventListener(){
@@ -39,6 +41,7 @@ class Selectable {
     this.selectableArea.addEventListener('mouseup', this.handleMouseUp);
     document.addEventListener('dragstart', this.handleDragStart);
     document.addEventListener('dragend', this.handleDragEnd);
+    document.addEventListener("drag", this.handleDragging);
     this.droppableArea.addEventListener('dragenter', this.handleDragEnter);
     this.droppableArea.addEventListener('dragleave', this.handleDragLeave);
     this.droppableArea.addEventListener('dragover', this.handleDragOver);
@@ -48,13 +51,19 @@ class Selectable {
     this.items = document.querySelectorAll(".item");
     for(let i = 0; i < this.items.length; i ++){
       this.items[i].setAttribute('draggable', 'true');
+
+      // can be removed later.
+      this.items[i].childNodes[3].innerHTML = "File " + i;
     }
     this.selectableArea = document.querySelectorAll(".container")[0];
     this.droppableArea = document.querySelector(".droppable-container");
     this.highlightedItem = []
+    this.cloneHighlightedItem = []
     this.mouseup = false;
     this.isDroppableArea = false;
     this.lasso = this.createLasso();
+    this.fakeGhostImage = "";
+    this.realGhostImage = "";
   }
 
   createLasso(){
@@ -78,28 +87,57 @@ class Selectable {
       opacity: 0,
     });
   }
+
+  pushHighlightedItem(items){
+    this.cloneHighlightedItem = []
+    if ( items.constructor.name === 'NodeList' ) {
+      for (let i = 0; i < items.length; i++) {
+        this.highlightedItem.push(items[i])
+        document.body
+        this.clonedHighlightedItem(items[i])
+      };
+    } else {
+      this.highlightedItem.push(items)
+      this.clonedHighlightedItem(items)
+    }
+  }
+
+  clonedHighlightedItem(item){
+    let temp = item.cloneNode(true)
+    temp.classList.add("copied")
+    this.cloneHighlightedItem.push(temp)
+  }
 }
 
 Selectable.prototype.handleMouseDown = function(e){
+  
+  this.origin = {
+    x: e.pageX,
+    y: e.pageY,
+  };
+
+  this.current = {
+    x1: this.origin.x,
+    y1: this.origin.y,
+    x2: e.pageX,
+    y2: e.pageY,
+  };
+
   this.isDroppableArea = false;
+
   if (e.target.classList.contains("item")){
-    // prepare to drag ? 
+    if ( this.highlightedItem.length ){
+      this.highlightedItem = []
+    }
     this.highlightedItem.push(e.target);
-    console.log("preapring to drag")
+    this.originalPosition = {
+      left: rect(e.target).x1 -5 ,
+      top: rect(e.target).y1 - 5
+    }
   } else {
     this.highlightedItem = []
     this.mouseup = true;
     this.selectableArea.appendChild(this.lasso);
-    this.origin = {
-      x: e.pageX,
-      y: e.pageY,
-    };
-    this.current = {
-      x1: this.origin.x,
-      y1: this.origin.y,
-      x2: e.pageX,
-      y2: e.pageY,
-    };
   }
   
 }
@@ -108,7 +146,6 @@ Selectable.prototype.handleMouseDown = function(e){
 Selectable.prototype.handleMouseMove = function(e){
   if (this.mouseup) {
     this.highlightedItem = []
-
     this.current = {
       x1: this.origin.x,
       y1: this.origin.y,
@@ -151,20 +188,33 @@ Selectable.prototype.handleMouseMove = function(e){
     };
 
     let highlightedItem = document.querySelectorAll(".highlighter");
-    for (let i = 0; i < highlightedItem.length; i++) {
-      this.highlightedItem.push(highlightedItem[i]);
-    };
+    this.pushHighlightedItem(highlightedItem)
   }
 }
 
 Selectable.prototype.handleMouseUp = function(e){
-  
-
+  console.log(this.cloneHighlightedItem.length)
   if (this.mouseup) {
     this.mouseup = false
     this.selectableArea.removeChild(this.lasso);
     this.resetLasso()
+  } 
+
+  if (this.cloneHighlightedItem.length){
+    for (let i = 0; i < this.cloneHighlightedItem.length; i++) {
+      css(this.cloneHighlightedItem[i], {
+        position: 'absolute',
+        top: rect(this.highlightedItem[i]).y1 - 5,
+        left: rect(this.highlightedItem[i]).x1 - 5,
+        zIndex: 5,
+        transition: 'all 1s',
+        transitionDelay: '14.25ms',
+      })
+      
+      this.selectableArea.appendChild(this.cloneHighlightedItem[i]);
+    };
   }
+
 }
 
 Selectable.prototype.highlight = function(item){
@@ -188,18 +238,60 @@ Selectable.prototype.highlight = function(item){
 
 Selectable.prototype.handleDragStart = function(e){
   console.log("drag start");
+
+  // create a fake ghost
+  this.fakeGhostImage = e.target.cloneNode(true);
+  css(this.fakeGhostImage, {
+    position: 'fixed',
+    top: '-100px',
+    left: '-100px',
+    opacity: 0
+  })
+  document.body.appendChild(this.fakeGhostImage);
+  e.dataTransfer.setDragImage(this.fakeGhostImage, 0, 0);
+  console.log(this.highlightedItem)
+  console.log(this.cloneHighlightedItem)
+
+  if (this.cloneHighlightedItem.length){
+    for (let i = 0; i < this.cloneHighlightedItem.length; i++) {
+      css(this.cloneHighlightedItem[i], {
+        transform: `translateY(100px)`,
+      })
+      // this.cloneHighlightedItem[i].classList.add('translator')
+      
+      //this.selectableArea.appendChild(this.cloneHighlightedItem[i]);
+    };
+  }
+
+  // create a real ghost
+  // this.realGhostImage = e.target.cloneNode(true);
+  // document.body.appendChild(this.realGhostImage);
+  // css(this.realGhostImage, {
+  //   position: 'fixed',
+  //   top: this.originalPosition.top,
+  //   left: this.originalPosition.left,
+  // })
 }
+
+Selectable.prototype.handleDragging = function(e){
+  console.log("dragging");
+  // let x = e.pageX - this.originalPosition.left - 20
+  // let y = e.pageY - this.originalPosition.top
+  // css(this.realGhostImage, {
+  //   transform: `translate(${x}px, ${y}px)`
+  // })
+}
+
+
 
 Selectable.prototype.handleDragEnter = function(e){
   this.isDroppableArea = true;
-  console.log("drag enter");
 }
 
 Selectable.prototype.handleDragLeave = function(e){
   if (e.target == this.droppableArea) {
     this.isDroppableArea = true;
   }
-  console.log("drag leave")
 }
 
 Selectable.prototype.handleDragOver= function(e){
@@ -209,14 +301,13 @@ Selectable.prototype.handleDragOver= function(e){
 }
 
 Selectable.prototype.handleDragEnd= function(e){
-  console.log(this.isDroppableArea)
+  document.body.removeChild(this.fakeGhostImage);
+  
   if (this.isDroppableArea) {
-    console.log("drag released")
     for(let i = 0; i < this.highlightedItem.length; i ++) {
       this.droppableArea.appendChild(this.highlightedItem[i]);
     }
   }
-  
 }
 
 new Selectable()
