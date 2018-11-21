@@ -18,23 +18,42 @@ let rect = function(item) {
 
 class Selectable {
   constructor() {
+    this.setup();
+    this.initEventListener();
+  }
+
+  bindEvent(){
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.setup();
-    this.init();
+    this.handleDragEnter = this.handleDragEnter.bind(this);
+    this.handleDragLeave = this.handleDragLeave.bind(this);
+    this.handleDragOver = this.handleDragOver.bind(this);
+    this.handleDragEnd = this.handleDragEnd.bind(this);
   }
 
-  init() {
-    this.selectableArea.addEventListener('mousedown', this.handleMouseDown)
-    this.selectableArea.addEventListener('mousemove', this.handleMouseMove)
-    this.selectableArea.addEventListener('mouseup', this.handleMouseUp)
-  };
+  initEventListener(){
+    this.bindEvent();
+    this.selectableArea.addEventListener('mousedown', this.handleMouseDown);
+    this.selectableArea.addEventListener('mousemove', this.handleMouseMove);
+    this.selectableArea.addEventListener('mouseup', this.handleMouseUp);
+    document.addEventListener('dragstart', this.handleDragStart);
+    document.addEventListener('dragend', this.handleDragEnd);
+    this.droppableArea.addEventListener('dragenter', this.handleDragEnter);
+    this.droppableArea.addEventListener('dragleave', this.handleDragLeave);
+    this.droppableArea.addEventListener('dragover', this.handleDragOver);
+  }
 
   setup() {
     this.items = document.querySelectorAll(".item");
+    for(let i = 0; i < this.items.length; i ++){
+      this.items[i].setAttribute('draggable', 'true');
+    }
     this.selectableArea = document.querySelectorAll(".container")[0];
+    this.droppableArea = document.querySelector(".droppable-container");
+    this.highlightedItem = []
     this.mouseup = false;
+    this.isDroppableArea = false;
     this.lasso = this.createLasso();
   }
 
@@ -62,26 +81,33 @@ class Selectable {
 }
 
 Selectable.prototype.handleMouseDown = function(e){
-  this.mouseup = true;
-  this.selectableArea.appendChild(this.lasso);
-  this.origin = {
-    x: e.pageX,
-    y: e.pageY,
-  };
-  this.current = {
-    x1: this.origin.x,
-    y1: this.origin.y,
-    x2: e.pageX,
-    y2: e.pageY,
-  };
-  for (var i = 0; i < this.items.length; i++) {
-    this.highlight(this.items[i]);
-  };
+  this.isDroppableArea = false;
+  if (e.target.classList.contains("item")){
+    // prepare to drag ? 
+    this.highlightedItem.push(e.target);
+    console.log("preapring to drag")
+  } else {
+    this.highlightedItem = []
+    this.mouseup = true;
+    this.selectableArea.appendChild(this.lasso);
+    this.origin = {
+      x: e.pageX,
+      y: e.pageY,
+    };
+    this.current = {
+      x1: this.origin.x,
+      y1: this.origin.y,
+      x2: e.pageX,
+      y2: e.pageY,
+    };
+  }
+  
 }
 
 
 Selectable.prototype.handleMouseMove = function(e){
   if (this.mouseup) {
+    this.highlightedItem = []
 
     this.current = {
       x1: this.origin.x,
@@ -123,13 +149,22 @@ Selectable.prototype.handleMouseMove = function(e){
     for (var i = 0; i < this.items.length; i++) {
       this.highlight(this.items[i]);
     };
+
+    let highlightedItem = document.querySelectorAll(".highlighter");
+    for (let i = 0; i < highlightedItem.length; i++) {
+      this.highlightedItem.push(highlightedItem[i]);
+    };
   }
 }
 
 Selectable.prototype.handleMouseUp = function(e){
-  this.mouseup = false
-  this.selectableArea.removeChild(this.lasso);
-  this.resetLasso()
+  
+
+  if (this.mouseup) {
+    this.mouseup = false
+    this.selectableArea.removeChild(this.lasso);
+    this.resetLasso()
+  }
 }
 
 Selectable.prototype.highlight = function(item){
@@ -149,6 +184,39 @@ Selectable.prototype.highlight = function(item){
     item.style.backgroundColor = ""
     item.classList.remove("highlighter");
   }
+}
+
+Selectable.prototype.handleDragStart = function(e){
+  console.log("drag start");
+}
+
+Selectable.prototype.handleDragEnter = function(e){
+  this.isDroppableArea = true;
+  console.log("drag enter");
+}
+
+Selectable.prototype.handleDragLeave = function(e){
+  if (e.target == this.droppableArea) {
+    this.isDroppableArea = true;
+  }
+  console.log("drag leave")
+}
+
+Selectable.prototype.handleDragOver= function(e){
+  if (this.highlightedItem.length) {
+    e.preventDefault();
+  }
+}
+
+Selectable.prototype.handleDragEnd= function(e){
+  console.log(this.isDroppableArea)
+  if (this.isDroppableArea) {
+    console.log("drag released")
+    for(let i = 0; i < this.highlightedItem.length; i ++) {
+      this.droppableArea.appendChild(this.highlightedItem[i]);
+    }
+  }
+  
 }
 
 new Selectable()

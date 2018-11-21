@@ -20,19 +20,30 @@ div {
   flex-wrap: wrap;
   justify-content: stretch;
   align-content: flex-start;
+  margin-bottom: 20px;
 }
 
 .item {
   width: 100px;
+  height: 130px;
   margin: 5px;
   padding: 10px;
   text-align: center;
   position: relative;
 }
 
+.item::after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+}
+
 .item:hover {
   background: #F4F4F4;
-  
 }
 
 .highlighter::before { 
