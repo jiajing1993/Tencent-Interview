@@ -156,10 +156,11 @@ class Selectable {
 
     function mountCloneItemToDOM(that){
       console.log("mounted")
-      that.ghostImage.fake.classList.add('ghost-wrapper')
-      document.body.appendChild(that.ghostImage.fake)
+      // that.ghostImage.fake.classList.add('ghost-wrapper')
+      // document.body.appendChild(that.ghostImage.fake)
       loop(that.cloneHighlightedItem, function(item){
-        that.ghostImage.fake.appendChild(item.element);
+        // that.ghostImage.fake.appendChild(item.element);
+        that.selectableArea.appendChild(item.element);
         item.element.classList.add('copied')
         css(item.element, {
           position: 'absolute',
@@ -362,3 +363,6 @@ class Lasso {
     });
   }
 }
+
+
+new Selectable()
