@@ -10,8 +10,14 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
 - [ ] Better File Organization
 - [ ] Testing
 
+## Screenshot
 ![alt text](https://i.imgur.com/bvT6Mrw.png "Highlight to select div")
 ![alt text](https://i.imgur.com/ydYJhVd.png "Selected Div Animate to Cursor when dragging")
+
+## Issue
+1. Wrap the selected div into ghost-wrapper
+2. Ghost Wrapper doesnt animate (transfrom: translate) with cursor.
+3. Set Ghost Wrapper to fixed or absolute ? 
 
 
 ## Reference
