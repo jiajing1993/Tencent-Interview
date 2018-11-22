@@ -40,7 +40,7 @@ class Selectable {
     }
 
     this.control = {
-      mouseupL: false,
+      mouseup: false,
       isDroppableArea: false,
     }
     
