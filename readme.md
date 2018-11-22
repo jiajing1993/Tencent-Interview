@@ -14,11 +14,19 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
 ![alt text](https://i.imgur.com/bvT6Mrw.png "Highlight to select div")
 ![alt text](https://i.imgur.com/ydYJhVd.png "Selected Div Animate to Cursor when dragging")
 
+## Plan to do 
+1. Mouse Down to Higlight
+2. How to store selected item
+3. Draw a Lasso
+4. Detroy Lasso
+5. Custom Ghost Image on Dragging event
+6. Selected Items Animation to Cursor on Drag Start
+7. Animate Items back to original position when Dragging cancel
+
 ## Issue
 1. Wrap the selected div into ghost-wrapper
 2. Ghost Wrapper doesnt animate (transfrom: translate) with cursor.
-3. Set Ghost Wrapper to fixed or absolute ? 
-
+3. Set Ghost Wrapper to fixed or absolute? 
 
 ## Reference
 1. [Setting a custom ghost image when using HTML5 drag and drop](https://kryogenix.org/code/browser/custom-drag-image.html)
