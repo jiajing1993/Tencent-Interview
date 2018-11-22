@@ -14,7 +14,7 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
 ![alt text](https://i.imgur.com/bvT6Mrw.png "Highlight to select div")
 ![alt text](https://i.imgur.com/ydYJhVd.png "Selected Div Animate to Cursor when dragging")
 
-## Plan to do 
+## The Process
 1. **Mouse Down to Higlight**
   - when mouseDown on item, that item will be selected.
   - when mouseDown on `draggableArea`, the lasso will be appended.
