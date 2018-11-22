@@ -10,6 +10,9 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
 - [ ] Better File Organization
 - [ ] Testing
 
+![alt text](https://i.imgur.com/bvT6Mrw.png "Highlight to select div")
+![alt text](https://i.imgur.com/ydYJhVd.png "Selected Div Animate to Cursor when dragging")
+
 
 ## Reference
 1. [Setting a custom ghost image when using HTML5 drag and drop](https://kryogenix.org/code/browser/custom-drag-image.html)
