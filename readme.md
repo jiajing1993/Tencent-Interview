@@ -20,7 +20,7 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
   - when mouseDown on `draggableArea`, the lasso will be appended.
   - when mouseDown on any other places, nothing will happended. 
 
-2. **How to store selected item****
+2. **How to store selected item**
   - when the item is being cover by Lasso, `highligted` class will be added.
   - These elements will be stored in `selectedItem` array. They will be used when these elements being dropped to the `droppable area`. By using `appendChild`
   - Beside that, These elements will also be cloned and store in `cloneSelectedItem` array, together with its original positon. It is used to perform the dragging animation. Noticed that when the selected elements is being drag, the 
@@ -33,7 +33,7 @@ We can higlight the div with mouse movement, to draw a rectangular to select the
 the mouse cursor moving points
 
 4. **Detroy Lasso**
-  - Lasso will not be destroyed. When it is not being used. the with and height will be 0, and opacity is also 0. You just can see it. 
+  - Lasso will not be destroyed. When it is not being used. the width and height will be 0, and opacity is also 0. It is there, but we can't see.
 
 5. **Custom Ghost Image on Dragging event**
   - Native Drag and Drop can only see single file image on dragging. To hide it, my plan is to create a hidden div to replace the image by `e.dataTransfer.setDragImage`. 
