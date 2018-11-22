@@ -55,6 +55,7 @@ class Selectable {
       // can be removed later.
       this.items[i].childNodes[3].innerHTML = "File " + i;
     }
+    this.rotateAngle = [0, 5, 10, -5, -10]
     this.selectableArea = document.querySelectorAll(".container")[0];
     this.droppableArea = document.querySelector(".droppable-container");
     this.highlightedItem = []
@@ -93,7 +94,6 @@ class Selectable {
     if ( items.constructor.name === 'NodeList' ) {
       for (let i = 0; i < items.length; i++) {
         this.highlightedItem.push(items[i])
-        document.body
         this.clonedHighlightedItem(items[i])
       };
     } else {
@@ -199,7 +199,8 @@ Selectable.prototype.handleMouseUp = function(e){
     this.selectableArea.removeChild(this.lasso);
     this.resetLasso()
   } 
-
+  console.log(this.highlightedItem)
+  console.log(this.cloneHighlightedItem)
   if (this.cloneHighlightedItem.length){
     for (let i = 0; i < this.cloneHighlightedItem.length; i++) {
       css(this.cloneHighlightedItem[i], {
@@ -207,7 +208,7 @@ Selectable.prototype.handleMouseUp = function(e){
         top: rect(this.highlightedItem[i]).y1 - 5,
         left: rect(this.highlightedItem[i]).x1 - 5,
         zIndex: 5,
-        transition: 'all 1s',
+        transition: 'all 0.5s',
         transitionDelay: '14.25ms',
       })
       
@@ -249,37 +250,48 @@ Selectable.prototype.handleDragStart = function(e){
   })
   document.body.appendChild(this.fakeGhostImage);
   e.dataTransfer.setDragImage(this.fakeGhostImage, 0, 0);
-  console.log(this.highlightedItem)
-  console.log(this.cloneHighlightedItem)
 
+  // create a real ghost
+  this.realGhostImage = document.createElement('div');
+  this.realGhostImage.classList.add('ghost-wrapper')
+  css(this.realGhostImage, {
+    position: 'fixed',
+    top: this.originalPosition.top,
+    left: this.originalPosition.left,
+    padding: '10px',
+  })
+  document.body.appendChild(this.realGhostImage);
   if (this.cloneHighlightedItem.length){
     for (let i = 0; i < this.cloneHighlightedItem.length; i++) {
-      css(this.cloneHighlightedItem[i], {
-        transform: `translateY(100px)`,
-      })
-      // this.cloneHighlightedItem[i].classList.add('translator')
+      this.realGhostImage.appendChild(this.cloneHighlightedItem[i])
+      let x = e.pageX - rect(this.cloneHighlightedItem[i]).x1
+      let y = e.pageY - rect(this.cloneHighlightedItem[i]).y1
+      if ( i < 5){
+        css(this.cloneHighlightedItem[i], {
+          transform: `translate(${x}px, ${y}px) rotate(${this.rotateAngle[i]}deg)`,
+        })
+      }else {
+        css(this.cloneHighlightedItem[i], {
+          transform: `translate(${x}px, ${y}px) rotate(0deg)`,
+        })
+      }
+
       
-      //this.selectableArea.appendChild(this.cloneHighlightedItem[i]);
     };
   }
 
-  // create a real ghost
-  // this.realGhostImage = e.target.cloneNode(true);
-  // document.body.appendChild(this.realGhostImage);
-  // css(this.realGhostImage, {
-  //   position: 'fixed',
-  //   top: this.originalPosition.top,
-  //   left: this.originalPosition.left,
-  // })
+  
 }
 
 Selectable.prototype.handleDragging = function(e){
   console.log("dragging");
-  // let x = e.pageX - this.originalPosition.left - 20
-  // let y = e.pageY - this.originalPosition.top
-  // css(this.realGhostImage, {
-  //   transform: `translate(${x}px, ${y}px)`
-  // })
+  let x = e.pageX - this.originalPosition.left - 20
+  let y = e.pageY - this.originalPosition.top
+  console.log(x)
+  console.log(y)
+  css(this.realGhostImage, {
+    transform: `translate(${x}px, ${y}px)`
+  })
 }
 
 
@@ -302,6 +314,7 @@ Selectable.prototype.handleDragOver= function(e){
 
 Selectable.prototype.handleDragEnd= function(e){
   document.body.removeChild(this.fakeGhostImage);
+  document.body.removeChild(this.realGhostImage);
   
   if (this.isDroppableArea) {
     for(let i = 0; i < this.highlightedItem.length; i ++) {
