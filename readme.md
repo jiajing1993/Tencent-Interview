@@ -50,9 +50,10 @@ the mouse cursor moving points
   - and when the mouseUp or dragEnd event, remove the element from DOM. 
 
 ## Issue
-1. Wrap the selected div into ghost-wrapper
-2. Ghost Wrapper doesnt animate (transfrom: translate) with cursor.
-3. Set Ghost Wrapper to fixed or absolute? 
+1. I not sure if the way of faking dragImage is correct. 
+2. Wrap the selected div into ghost-wrapper ? Then it will be easier to follow cursor during Ondrag event. I will just need to translate one element instead of multiple clonedItems
+2. Ghost Wrapper doesnt animate (transfrom: translate) with cursor.?
+3. Should I set Ghost Wrapper to fixed or absolute? 
 
 ## Reference
 1. [Setting a custom ghost image when using HTML5 drag and drop](https://kryogenix.org/code/browser/custom-drag-image.html)
