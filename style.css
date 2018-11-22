@@ -4,6 +4,8 @@ body, html {
   background: black;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
+  padding: 0;
+  margin: 0;
 }
 
 div {
@@ -14,7 +16,6 @@ div {
   min-height: 200px;
   width: 100%;
   background: white;
-  padding: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: stretch;
@@ -53,11 +54,15 @@ div {
   z-index: 4;
 }
 
-.item:hover {
+/* .item:hover {
+  background: #F4F4F4;
+} */
+
+.highlighted {
   background: #F4F4F4;
 }
 
-.highlighter::before { 
+.highlighted::before { 
   content: "";
   position: absolute;
   top: 5px;
@@ -70,7 +75,25 @@ div {
   background-image: url('./tick.png');
   background-position: center;
   background-repeat: no-repeat;
+}
 
+.copied {
+  background: #F4F4F4;
+}
+
+.copied::before { 
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #308EFF;
+  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  z-index: 5;
+  background-image: url('./tick.png');
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .item > .content {
@@ -80,10 +103,6 @@ div {
   background-color:#2c3e50;
   border: 1px solid #4a4a4a;
   border-radius: 5px;
-}
-
-.item:nth-child(2n) > .content {
-  background-color:red;
 }
 
 .item > p.title {
@@ -99,4 +118,11 @@ div {
 .translator {
   transform:translate(0px,-100px);
   transition: all 0.5s;
+}
+
+.ghost-wrapper {
+  height: 200px;
+  width: 200px;
+  border: 1px solid black;
+  position: absolute;
 }
